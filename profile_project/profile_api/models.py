@@ -12,15 +12,13 @@ class UserProfileManager(BaseUserManager):
         """create a new user profile object """
         if not email:
             raise ValueError('user must have an email address valid.')
-            email = self.normalize_email(email)
-            
-            user = self.model(email=email, name=name)
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-            user.set_password(password)
-            user.save(using=self._db)
-
-            return user
-    def create_superuser(self,email,name,password):
+    def create_superuser(self,email,name,password=None):
         """create and save a new superuser with given details """
         user = self.create_user(email,name,password)
 
@@ -36,7 +34,7 @@ class UserProfileManager(BaseUserManager):
 
 
 #create ypur user profile here
-class Userprofile(AbstractBaseUser, PermissionsMixin):
+class UserProfile(AbstractBaseUser, PermissionsMixin):
     """  represent user profile inside a system """
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
